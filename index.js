@@ -93,6 +93,7 @@ const Container = {
   },
   data() {
     return ({
+      location_pathname: location.pathname,
       submissions: [],
       loading: false,
       handler: new Vue(),
@@ -147,7 +148,7 @@ const Container = {
   },
   template: `
   <div style="padding: 0 2vw;">
-    <h2 style="margin: 1rem 0;"><a tabindex="2525" href="/" style="color: rgba(0,0,0,.75); text-decoration: none;">Submissions per day</a></h2>
+    <h2 style="margin: 1rem 0;"><a tabindex="2525" v-bind:href="location_pathname" style="color: rgba(0,0,0,.75); text-decoration: none;">Submissions per day</a></h2>
     <id-form v-on:id-post="request" v-bind:button_disabled="loading"></id-form>
     <vue-c3 v-bind:handler="handler"></vue-c3>
     <Button v-on:click="rotate_axis" html-type="button">Rotate Axis</Button>
