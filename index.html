@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Submissions per day</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+  <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.6.14/c3.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.9.2/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.6.14/c3.min.js"></script>
+  <script src="./vue-c3.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/iview/3.3.3/styles/iview.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/iview/3.3.3/iview.min.js"></script>
+  <script defer src="./index.js"></script>
+</head>
+
+<body>
+  <div id="app">
+    <router-view></router-view>
+  </div>
+</body>
+
+<style>
+  .large {
+    font-size: 120%;
+  }
+</style>
+
+</html>
