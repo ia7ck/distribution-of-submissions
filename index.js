@@ -34,32 +34,60 @@ const IdForm = {
 };
 
 const days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-const chart_data_config = {
+const timeframes = ["00:00-03:00", "03:00-06:00", "06:00-09:00", "09:00-12:00", "12:00-15:00", "15:00-18:00", "18:00-21:00", "21:00-24:00"];
+const default_bar_data = timeframes.map((timeframe) => (
+  [timeframe, ...days_of_week.map((_) => (0))]
+));
+const bar_data_config = {
+  type: "bar",
+  groups: [timeframes],
+  order: null,
+};
+const bar_config = {
+  axis: {
+    x: {
+      type: "category",
+      tick: {
+        format: (x) => (days_of_week[x]),
+      },
+    },
+    y: {
+      min: 0,
+      padding: {
+        bottom: 0,
+      },
+    },
+  },
+};
+const default_scatter_data = days_of_week.map((_, idx) => ({
+  day_of_week: idx,
+  submission: null,
+}));
+const scatter_data_config = {
   keys: {
     x: "day_of_week",
     value: ["submission"],
   },
   type: "scatter",
 };
-const config = {
+const scatter_config = {
   transition: {
     duration: null,
   },
   color: {
-    pattern: ["#009944"],
+    pattern: ["#009E96"],
   },
   axis: {
-    rotated: false,
+    rotated: true,
     x: {
       label: "day of week",
       type: "category",
       tick: {
         format: (x) => (days_of_week[x]),
-      }
+      },
     },
     y: {
       label: "hour",
-      inverted: true,
       max: 23,
       min: 0,
       padding: {
@@ -82,10 +110,6 @@ const config = {
     },
   },
 };
-const default_data = days_of_week.map((_, idx) => ({
-  day_of_week: idx,
-  submission: null,
-}));
 const Container = {
   components: {
     "id-form": IdForm,
@@ -96,25 +120,41 @@ const Container = {
       location_pathname: location.pathname,
       submissions: [],
       loading: false,
-      handler: new Vue(),
+      bar_handler: new Vue(),
+      scatter_handler: new Vue(),
     });
   },
   mounted() {
-    this.handler.$emit("init", {
+    this.bar_handler.$emit("init", {
       data: {
-        json: default_data,
-        ...chart_data_config,
+        columns: default_bar_data,
+        ...bar_data_config,
       },
-      ...config,
+      ...bar_config,
+    });
+    this.scatter_handler.$emit("init", {
+      data: {
+        json: default_scatter_data,
+        ...scatter_data_config,
+      },
+      ...scatter_config,
     });
   },
-  beforeUpdate() {
-    this.handler.$emit("dispatch", (chart) => {
-      chart.load({
-        json: default_data.concat(submissions_to_chart_data(this.submissions)),
-        ...chart_data_config,
+  watch: {
+    submissions() {
+      this.bar_handler.$emit("dispatch", (chart) => {
+        chart.load({
+          columns: submissions_to_bar_data(this.submissions),
+          ...bar_data_config,
+        });
       });
-    });
+      this.scatter_handler.$emit("dispatch", (chart) => {
+        chart.load({
+          json: default_scatter_data.concat(submissions_to_scatter_data(this.submissions)),
+          ...scatter_data_config,
+        });
+      });
+    },
   },
   methods: {
     async request(id) {
@@ -130,28 +170,13 @@ const Container = {
         this.loading = false;
       }
     },
-    rotate_axis() {
-      this.handler.$emit("destroy"); // かなしい
-      config.axis.rotated = !config.axis.rotated;
-      config.axis.y.inverted = !config.axis.y.inverted;
-      this.handler.$emit("init", {
-        transition: {
-          duration: null,
-        },
-        data: {
-          json: default_data.concat(submissions_to_chart_data(this.submissions)),
-          ...chart_data_config,
-        },
-        ...config,
-      });
-    },
   },
   template: `
   <div style="padding: 0 2vw;">
     <h2 style="margin: 1rem 0;"><a tabindex="2525" v-bind:href="location_pathname" style="color: rgba(0,0,0,.75); text-decoration: none;">Submissions per day</a></h2>
     <id-form v-on:id-post="request" v-bind:button_disabled="loading"></id-form>
-    <vue-c3 v-bind:handler="handler"></vue-c3>
-    <Button v-on:click="rotate_axis" html-type="button">Rotate Axis</Button>
+    <vue-c3 v-bind:handler="bar_handler"></vue-c3>
+    <vue-c3 v-bind:handler="scatter_handler"></vue-c3>
   </div>
   `
 };
@@ -164,10 +189,18 @@ async function get_timeline(id) {
   return json;
 }
 
-function submissions_to_chart_data(submissions) {
+function submissions_to_bar_data(submissions) {
+  let ret = default_bar_data.map((a) => (a.slice()));
+  submissions.forEach(({ epoch_second }) => {
+    const d = new Date(epoch_second * 1000);
+    ret[Math.floor(dateFns.getHours(d) / 3)][dateFns.getISODay(d) - 1 + 1] += 1; // "00:00-03:00"とかの分だけ +1 している
+  });
+  return ret;
+}
+
+function submissions_to_scatter_data(submissions) {
   return submissions.map(({ epoch_second }) => {
     const d = new Date(epoch_second * 1000); // sec to msec
-    const today = new Date();
     return ({
       day_of_week: dateFns.getISODay(d) - 1, // Mon.: 0, ..., Sun.: 6
       submission: dateFns.getHours(d) + dateFns.getMinutes(d) / 60, // 0, 1, ... 23
