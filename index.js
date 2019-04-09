@@ -173,7 +173,7 @@ const Container = {
   },
   template: `
   <div style="padding: 0 2vw;">
-    <h2 style="margin: 1rem 0;"><a tabindex="2525" v-bind:href="location_pathname" style="color: rgba(0,0,0,.75); text-decoration: none;">Submissions per day</a></h2>
+    <h2 style="margin: 1rem 0;"><a tabindex="2525" v-bind:href="location_pathname" style="color: rgba(0,0,0,.75); text-decoration: none;">Distribution of Submissions</a></h2>
     <id-form v-on:id-post="request" v-bind:button_disabled="loading"></id-form>
     <vue-c3 v-bind:handler="bar_handler"></vue-c3>
     <vue-c3 v-bind:handler="scatter_handler"></vue-c3>
