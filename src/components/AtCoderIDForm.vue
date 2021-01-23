@@ -1,15 +1,21 @@
 <template>
   <!-- `.prevent` modifier https://jp.vuejs.org/v2/guide/syntax.html#%E4%BF%AE%E9%A3%BE%E5%AD%90 -->
-  <form class="box is-flex is-center is-middle" v-on:submit.prevent="onSubmit">
-    <label class="text is-padding-right-xs" for="atcoder-id">AtCoder ID</label>
+  <form
+    class="box is-flex is-center is-middle is-padding-vertical"
+    v-on:submit.prevent="onSubmit"
+  >
     <input
-      id="atcoder-id"
-      class="input"
+      class="input is-margin-horizontal-xs"
       type="text"
+      placeholder="AtCoder ID"
       v-model="id"
       :disabled="inputDisabled"
     />
-    <button class="button is-outline" type="submit" :disabled="inputDisabled">
+    <button
+      class="button is-outline is-margin-horizontal-xs"
+      type="submit"
+      :disabled="inputDisabled"
+    >
       Go!
     </button>
   </form>

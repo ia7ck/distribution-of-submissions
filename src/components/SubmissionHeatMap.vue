@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="is-padding-vertical">
     <apexcharts
       type="heatmap"
       height="400"

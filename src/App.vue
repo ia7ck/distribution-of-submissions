@@ -5,7 +5,9 @@
         <i class="bx bxl-github"></i>
       </a>
     </div>
-    <h1 class="text is-center is-lg">Distribution of Submissions</h1>
+    <h1 class="text is-center is-lg is-padding-vertical">
+      Distribution of Submissions
+    </h1>
     <AtCoderIDForm :handleSubmit="fetchSubmissions" :inputDisabled="loading" />
     <SubmissionHeatMap :submissions="submissions" />
   </div>
